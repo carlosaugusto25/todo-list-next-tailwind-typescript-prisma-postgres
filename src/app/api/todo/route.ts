@@ -17,3 +17,25 @@ export async function POST(request: Request) {
     }});
     return NextResponse.json({message: "success", newTodo});
 }
+
+export async function DELETE(request: Request) {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    const deletedTodo = await prisma.task.delete({where: {id: `${id}` }});
+    return NextResponse.json({message: "Delete success", deletedTodo});
+}
+
+export async function PUT(request: Request) {
+    const data = await request.json();
+    const updateTodo = await prisma.task.update({
+        where: {
+            id: data.id
+        },
+        data: {
+            title: data.title,
+            description: data.description,
+            completed: data.completed
+        }
+    })
+    return NextResponse.json({message: "Edited success", updateTodo});
+}
