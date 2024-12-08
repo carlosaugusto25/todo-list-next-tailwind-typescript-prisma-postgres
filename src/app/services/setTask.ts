@@ -1,9 +1,9 @@
-'use server'
+'use client'
 
 import { Task } from "./getTasks";
 
-export async function createTask(newTask: { title: string, description: string }): Promise<Task> {
-    const response = await fetch('https://todolistfullstackwithprisma.vercel.app/api/todo', {
+export async function createTask(newTask: { title: string, description: string, category: string }): Promise<Task> {
+    const response = await fetch('/api/todo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newTask),

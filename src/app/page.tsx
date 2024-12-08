@@ -14,6 +14,7 @@ export default function Home() {
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [category, setCategory] = useState('')
   const [id, setId] = useState(0)
 
   const [editMode, setEditMode] = useState(false)
@@ -24,6 +25,7 @@ export default function Home() {
       queryClient.invalidateQueries({ queryKey: ['todos'] });
       setTitle('')
       setDescription('')
+      setCategory('')
     }
   })
 
@@ -41,6 +43,7 @@ export default function Home() {
       setEditMode(false)
       setTitle('')
       setDescription('')
+      setCategory('')
       setId(0)
   }
   })
@@ -48,19 +51,21 @@ export default function Home() {
   const handleCreateTask = () => {
     mutation.mutate({
       title,
-      description
+      description,
+      category
     })
   }
 
-  const editTaskFunction = (title: string, description: string, id: number) => {
+  const editTaskFunction = (title: string, description: string, id: number, category: string) => {
     setTitle(title)
     setDescription(description)
     setId(id)
     setEditMode(true)
+    setCategory(category)
   }
 
   const handleEditTask = () => {
-    editMutation.mutate({id, title, description})
+    editMutation.mutate({id, title, description, category})
   }
 
   //end
@@ -82,11 +87,12 @@ export default function Home() {
               <div className="flex flex-col gap-2" key={todo.id}>
                 <li>{todo.title}</li>
                 <li>{todo.description}</li>
+                <li>{todo.category}</li>
                 <li>{todo.completed ? "true" : "false"}</li>
                 <li>{Intl.DateTimeFormat().format(new Date(todo.createdAt)) || todo.createdAt}</li>
                 <li className="flex gap-2">
                   <button className="bg-red-500 border-none outline-none rounded-md text-white p-4" onClick={() => deleteMutation.mutate(todo.id)}>Deletar</button>
-                  <button className="bg-blue-500 border-none outline-none rounded-md text-white p-4" onClick={() => editTaskFunction(todo.title, todo.description, todo.id)}>Editar</button>
+                  <button className="bg-blue-500 border-none outline-none rounded-md text-white p-4" onClick={() => editTaskFunction(todo.title, todo.description, todo.id, todo.category)}>Editar</button>
                 </li>
                 <li>-------------------------------------</li>
               </div>
@@ -107,6 +113,9 @@ export default function Home() {
             <label htmlFor="description">Descrição</label>
             <input className="text-black rounded-md outline-none p-4" value={description} onChange={(e) => setDescription(e.target.value)} type="text" name="description" id="description" />
             <br />
+            <label htmlFor="categroy">Categoria</label>
+            <input className="text-black rounded-md outline-none p-4" value={category} onChange={(e) => setCategory(e.target.value)} type="text" name="categoryy" id="category" />
+            <br/>
             {
               editMode ?
               <div className="flex gap-2">
