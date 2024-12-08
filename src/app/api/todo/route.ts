@@ -13,7 +13,9 @@ export async function POST(request: Request) {
     const newTodo = await prisma.task.create({data: {
         title: body.title,
         description: body.description,
-        completed: body.completed
+        completed: body.completed,
+        category: body.category
+
     }});
     return NextResponse.json({message: "success", newTodo});
 }
@@ -34,7 +36,8 @@ export async function PUT(request: Request) {
         data: {
             title: data.title,
             description: data.description,
-            completed: data.completed
+            completed: data.completed,
+            category: data.category
         }
     })
     return NextResponse.json({message: "Edited success", updateTodo});

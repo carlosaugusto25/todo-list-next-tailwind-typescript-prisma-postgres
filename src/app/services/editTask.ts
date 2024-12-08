@@ -1,7 +1,7 @@
 'use server'
 
-async function updateTask(updates: {id: string, title: string; description: string, completed: boolean }) {
-    const response = await fetch(`http://localhost:3000/api/todo`, {
+export async function updateTask(updates: {id: number, title: string; description: string }) {
+    const response = await fetch(`https://todolistfullstackwithprisma.vercel.app/api/todo`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),

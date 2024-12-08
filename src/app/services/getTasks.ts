@@ -9,7 +9,7 @@ export interface Task  {
   };
   
   export async function getTasks(): Promise<Task[]> {
-    const response = await fetch('http://localhost:3000/api/todo');
+    const response = await fetch('https://todolistfullstackwithprisma.vercel.app/api/todo');
     if (!response.ok) throw new Error('Failed to fetch todos');
     const todos = await response.json();
     return todos;

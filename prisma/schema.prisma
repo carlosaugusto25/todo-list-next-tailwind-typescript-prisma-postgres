@@ -18,6 +18,7 @@ model Task {
   id          String   @id @default(cuid())
   title       String
   description String
+  category    String
   completed   Boolean  @default(false)
   createdAt   DateTime @default(now())
 }
