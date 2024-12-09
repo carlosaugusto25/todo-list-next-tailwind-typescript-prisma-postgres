@@ -1,4 +1,4 @@
-
+"use server";
 import { Task } from "./getTasks";
 
 export async function createTask(newTask: { title: string, description: string, category: string }): Promise<Task> {
