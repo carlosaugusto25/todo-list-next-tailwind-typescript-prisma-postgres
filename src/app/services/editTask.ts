@@ -1,5 +1,5 @@
 
-export async function updateTask(updates: {id: number, title: string; description: string, category: string}) {
+export async function updateTask(updates: {id: number, title: string; description: string, category: string, completed: boolean}) {
     const response = await fetch(`/api/todo`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
