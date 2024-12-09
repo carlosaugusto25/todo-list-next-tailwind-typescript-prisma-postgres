@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import 'react-toastify/dist/ReactToastify.css';
 import "./globals.css";
 import Provider from "src/utils/Providers";
 import { Inter_Tight } from "next/font/google";
 
-const interTight = Inter_Tight({ 
+const interTight = Inter_Tight({
   subsets: ["latin"],
   variable: "--font-inter-tight",
-  weight: ["100","200","300","400","500","600","700","800","900"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -25,9 +25,9 @@ export default function RootLayout({
       <body
         className={` dark:bg-slate-900 dark:text-slate-50 ${interTight.variable} antialiased`}
       >
-          <Provider>
-            {children}
-          </Provider>
+        <Provider>
+          {children}
+        </Provider>
       </body>
     </html>
   );

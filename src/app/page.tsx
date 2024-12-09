@@ -10,9 +10,14 @@ import { FaTrashAlt, FaListUl } from "react-icons/fa";
 import { IoMdCheckboxOutline } from "react-icons/io";
 import { Header } from "./components/Header";
 import { Modal } from "./components/Modal";
+import Image from "next/image";
 import { FaBullseye } from "react-icons/fa6";
+import { useTheme } from "./context/theme-context";
+import { toast } from "react-toastify";
 
 export default function Home() {
+
+  const { theme } = useTheme()
 
   const queryClient = useQueryClient();
 
@@ -39,6 +44,10 @@ export default function Home() {
       setDescription('')
       setCategory('')
       setModalNewTask(false)
+      toast.success('Tarefa criada com sucesso!')
+    },
+    onError: () => {
+      toast.error('Erro ao criar nova tarefa.')
     }
   })
 
@@ -48,6 +57,10 @@ export default function Home() {
       queryClient.invalidateQueries({ queryKey: ['todos'] });
       setId(0)
       setModalDeleteTask(false)
+      toast.success('Tarefa excluída com sucesso!')
+    },
+    onError: () => {
+      toast.error('Erro ao excluir tarefa')
     }
   })
 
@@ -60,7 +73,13 @@ export default function Home() {
       setDescription('')
       setCategory('')
       setId(0)
+      if (modalEditTask) {
+        toast.success('Tarefa editada com sucesso!')
+      }
       setModalEditTask(false)
+    },
+    onError: () => {
+      toast.error('Erro ao editar tarefa')
     }
   })
 
@@ -114,15 +133,15 @@ export default function Home() {
         {
           (isLoading || isFetching || isFetching) ?
             <div className="flex items-center justify-center h-[calc(100vh-6rem)]">
-              <p className="text-2xl text-white">Carregando...</p>
+              {theme === 'light' ? <Image src="/assets/spinner-blue.svg" alt="spinner" width={100} height={100} /> : <Image src="/assets/spinner-white.svg" alt="spinner" width={100} height={100} />}
             </div>
             :
             <div className="">
               {data?.map((todo) => (
-                <div className={`flex w-full ${todo.completed ? 'bg-slate-600' : 'bg-slate-500'} rounded-md p-4 mb-4 justify-between`} key={todo.id}>
+                <div className={`flex w-full ${todo.completed ? 'bg-gray-100 dark:bg-slate-600' : 'bg-gray-200 dark:bg-slate-500'} rounded-md p-4 mb-4 justify-between max-[768px]:flex-col max-[768px]:gap-4`} key={todo.id}>
                   <div>
-                    <p className={`${todo.completed ? 'line-through text-slate-400' : ''} font-[800] text-4xl`}>{todo.title.charAt(0).toUpperCase() + todo.title.slice(1)}</p>
-                    <p className={`${todo.completed ? 'line-through text-slate-400' : ''} text-base font-[500] text-ellipsis text-nowrap overflow-hidden w-[600px]`}>{todo.description.charAt(0).toUpperCase() + todo.description.slice(1)}</p>
+                    <p className={`text-blue-500 ${todo.completed ? 'line-through text-slate-300 dark:text-slate-500' : ''} dark:text-slate-100 font-[800] text-4xl `}>{todo.title.charAt(0).toUpperCase() + todo.title.slice(1)}</p>
+                    <p className={`${todo.completed ? 'line-through text-slate-500' : ''} text-base font-[500] text-ellipsis text-nowrap overflow-hidden w-[600px] max-[768px]:w-[300px]`}>{todo.description.charAt(0).toUpperCase() + todo.description.slice(1)}</p>
                     <div className="flex items-center gap-2">
                       <p className="font-[300] text-xs">{Intl.DateTimeFormat().format(new Date(todo.createdAt)) || todo.createdAt}</p>
                       <p className="font-[500] text-xs text-white bg-blue-500 p-1 rounded-md">{todo.category.charAt(0).toUpperCase() + todo.category.slice(1)}</p>
@@ -137,8 +156,8 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex gap-2 items-center">
-                    <button className="bg-cyan-400 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDetails(todo.title, todo.description, todo.category, todo.completed)} ><FaListUl /></button>
-                    <button className="bg-red-500 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDelete(todo.id)}><FaTrashAlt /></button>
+                    <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDetails(todo.title, todo.description, todo.category, todo.completed)} ><FaListUl /></button>
+                    <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDelete(todo.id)}><FaTrashAlt /></button>
                     {!todo.completed && <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => editTaskFunction(todo.title, todo.description, todo.id, todo.category, todo.completed)}><FiEdit /></button>}
                     <button className={`${todo.completed ? 'bg-slate-700' : 'bg-green-500'} border-none outline-none rounded-md ${todo.completed ? 'text-slate-400' : 'text-white'} text-2xl p-2`} onClick={() => editMutation.mutate({ title: todo.title, description: todo.description, id: todo.id, category: todo.category, completed: !todo.completed })}><IoMdCheckboxOutline /></button>
                   </div>
@@ -150,10 +169,12 @@ export default function Home() {
 
         {
           modalNewTask &&
-          <Modal onClose={() => setModalNewTask(false)} title="Nova Tarefa">
+          <Modal onClose={() => {setModalNewTask(false);setTitle('');setDescription('');setCategory('')}} title="Nova Tarefa">
             {
               mutation.isPending ?
-                <p>Carregando...</p>
+                <div className="flex items-center justify-center h-48">
+                  {theme === 'light' ? <Image src="/assets/spinner-blue.svg" alt="spinner" width={100} height={100} /> : <Image src="/assets/spinner-white.svg" alt="spinner" width={100} height={100} />}
+                </div>
                 :
                 <form className="flex flex-col gap-2" action={editMode ? handleEditTask : handleCreateTask}>
                   <label htmlFor="title">Título</label>
@@ -170,10 +191,12 @@ export default function Home() {
 
         {
           modalEditTask &&
-          <Modal onClose={() => setModalEditTask(false)} title="Editar Tarefa">
+          <Modal onClose={() => {setModalEditTask(false);setTitle('');setDescription('');setCategory('')}} title="Editar Tarefa">
             {
-              mutation.isPending ?
-                <p>Carregando...</p>
+              editMutation.isPending ?
+                <div className="flex items-center justify-center h-48">
+                  {theme === 'light' ? <Image src="/assets/spinner-blue.svg" alt="spinner" width={100} height={100} /> : <Image src="/assets/spinner-white.svg" alt="spinner" width={100} height={100} />}
+                </div>
                 :
                 <form className="flex flex-col gap-2" action={editMode ? handleEditTask : handleCreateTask}>
                   <label htmlFor="title">Título</label>
