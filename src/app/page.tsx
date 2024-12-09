@@ -1,10 +1,16 @@
 "use client";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getTasks, Task } from "./services/getTasks";
 import { createTask } from "./services/setTask";
 import { deleteTask } from "./services/deleteTask";
 import { updateTask } from "./services/editTask";
-import { useState } from "react";
+import { FiEdit } from "react-icons/fi";
+import { FaTrashAlt, FaListUl } from "react-icons/fa";
+import { IoMdCheckboxOutline } from "react-icons/io";
+import { Header } from "./components/Header";
+import { Modal } from "./components/Modal";
+import { FaBullseye } from "react-icons/fa6";
 
 export default function Home() {
 
@@ -16,8 +22,14 @@ export default function Home() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
   const [id, setId] = useState(0)
+  const [completed, setCompleted] = useState(false)
 
   const [editMode, setEditMode] = useState(false)
+
+  const [modalNewTask, setModalNewTask] = useState(false)
+  const [modalEditTask, setModalEditTask] = useState(false)
+  const [modalDeleteTask, setModalDeleteTask] = useState(false)
+  const [modalDetailsTask, setModalDetailsTask] = useState(false)
 
   const mutation = useMutation({
     mutationFn: createTask,
@@ -26,6 +38,7 @@ export default function Home() {
       setTitle('')
       setDescription('')
       setCategory('')
+      setModalNewTask(false)
     }
   })
 
@@ -33,6 +46,8 @@ export default function Home() {
     mutationFn: deleteTask,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['todos'] });
+      setId(0)
+      setModalDeleteTask(false)
     }
   })
 
@@ -45,7 +60,8 @@ export default function Home() {
       setDescription('')
       setCategory('')
       setId(0)
-  }
+      setModalEditTask(false)
+    }
   })
 
   const handleCreateTask = () => {
@@ -56,80 +72,150 @@ export default function Home() {
     })
   }
 
-  const editTaskFunction = (title: string, description: string, id: number, category: string) => {
+  const editTaskFunction = (title: string, description: string, id: number, category: string, completedTask: boolean) => {
     setTitle(title)
     setDescription(description)
     setId(id)
     setEditMode(true)
     setCategory(category)
+    setCompleted(completedTask)
+    setModalEditTask(true)
+  }
+
+  const openModalDelete = (idDelete: number) => {
+    setId(idDelete)
+    setModalDeleteTask(true)
+  }
+
+  const openModalDetails = (title: string, description: string, category: string, completedTask: boolean) => {
+    setTitle(title)
+    setDescription(description)
+    setCategory(category)
+    setCompleted(completedTask)
+    setModalDetailsTask(true)
+  }
+
+  const closeModalDetailsTask = () => {
+    setModalDetailsTask(false)
+    setTitle('')
+    setDescription('')
+    setCategory('')
+    setCompleted(false)
   }
 
   const handleEditTask = () => {
-    editMutation.mutate({id, title, description, category})
+    editMutation.mutate({ id, title, description, category, completed })
   }
 
-  //end
-
-  if (isLoading) return <p>Loading...</p>;
-  if (error instanceof Error) return <p>Error: {error.message}</p>;
-
   return (
-    <div className="p-4">
-      <h1 className="text-center text-5xl ">ToDo.List</h1>
-      {
-        (isLoading || isFetching || isFetching) ?
-          <div className="flex items-center justify-center h-96">
-            <p className="text-2xl text-white">Carregando...</p>
-          </div>
-          :
-          <ul className="overflow-y-auto h-96">
-            {data?.map((todo) => (
-              <div className="flex flex-col gap-2" key={todo.id}>
-                <li>{todo.title}</li>
-                <li>{todo.description}</li>
-                <li>{todo.category}</li>
-                <li>{todo.completed ? "true" : "false"}</li>
-                <li>{Intl.DateTimeFormat().format(new Date(todo.createdAt)) || todo.createdAt}</li>
-                <li className="flex gap-2">
-                  <button className="bg-red-500 border-none outline-none rounded-md text-white p-4" onClick={() => deleteMutation.mutate(todo.id)}>Deletar</button>
-                  <button className="bg-blue-500 border-none outline-none rounded-md text-white p-4" onClick={() => editTaskFunction(todo.title, todo.description, todo.id, todo.category)}>Editar</button>
-                </li>
-                <li>-------------------------------------</li>
-              </div>
-            ))}
-          </ul>
-      }
+    <>
+      <Header setModal={() => setModalNewTask(true)} />
+      <div className="p-4 max-w-4xl mx-auto h-[calc(100vh-5rem)]">
+        {
+          (isLoading || isFetching || isFetching) ?
+            <div className="flex items-center justify-center h-[calc(100vh-6rem)]">
+              <p className="text-2xl text-white">Carregando...</p>
+            </div>
+            :
+            <div className="">
+              {data?.map((todo) => (
+                <div className={`flex w-full ${todo.completed ? 'bg-slate-600' : 'bg-slate-500'} rounded-md p-4 mb-4 justify-between`} key={todo.id}>
+                  <div>
+                    <p className={`${todo.completed ? 'line-through text-slate-400' : ''} font-[800] text-4xl`}>{todo.title.charAt(0).toUpperCase() + todo.title.slice(1)}</p>
+                    <p className={`${todo.completed ? 'line-through text-slate-400' : ''} text-base font-[500] text-ellipsis text-nowrap overflow-hidden w-[600px]`}>{todo.description.charAt(0).toUpperCase() + todo.description.slice(1)}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-[300] text-xs">{Intl.DateTimeFormat().format(new Date(todo.createdAt)) || todo.createdAt}</p>
+                      <p className="font-[500] text-xs text-white bg-blue-500 p-1 rounded-md">{todo.category.charAt(0).toUpperCase() + todo.category.slice(1)}</p>
+                      <>
+                        {
+                          todo.completed ?
+                            <p className="font-[500] text-xs text-white bg-green-500 p-1 rounded-md">Concluido</p>
+                            :
+                            <p className="font-[500] text-xs text-white bg-red-500 p-1 rounded-md">Pendente</p>
+                        }
+                      </>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <button className="bg-cyan-400 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDetails(todo.title, todo.description, todo.category, todo.completed)} ><FaListUl /></button>
+                    <button className="bg-red-500 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDelete(todo.id)}><FaTrashAlt /></button>
+                    {!todo.completed && <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => editTaskFunction(todo.title, todo.description, todo.id, todo.category, todo.completed)}><FiEdit /></button>}
+                    <button className={`${todo.completed ? 'bg-slate-700' : 'bg-green-500'} border-none outline-none rounded-md ${todo.completed ? 'text-slate-400' : 'text-white'} text-2xl p-2`} onClick={() => editMutation.mutate({ title: todo.title, description: todo.description, id: todo.id, category: todo.category, completed: !todo.completed })}><IoMdCheckboxOutline /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+        }
 
-      <br />
-      <h2>Nova tarefa</h2>
-      {
-        mutation.isPending ?
-          <p>Carregando...</p>
-          :
-          <form className="flex flex-col gap-2" action={ editMode ? handleEditTask : handleCreateTask}>
-            <label htmlFor="title">Título</label>
-            <input className="text-black rounded-md outline-none p-4" value={title} onChange={(e) => setTitle(e.target.value)} type="text" name="title" id="title" />
-            <br />
-            <label htmlFor="description">Descrição</label>
-            <input className="text-black rounded-md outline-none p-4" value={description} onChange={(e) => setDescription(e.target.value)} type="text" name="description" id="description" />
-            <br />
-            <label htmlFor="categroy">Categoria</label>
-            <input className="text-black rounded-md outline-none p-4" value={category} onChange={(e) => setCategory(e.target.value)} type="text" name="categoryy" id="category" />
-            <br/>
+
+        {
+          modalNewTask &&
+          <Modal onClose={() => setModalNewTask(false)} title="Nova Tarefa">
             {
-              editMode ?
-              <div className="flex gap-2">
-                <button type="submit" className="bg-blue-500 border-none outline-none rounded-md text-white p-4">editar</button>
-                <button type="button" className="bg-red-500 border-none outline-none rounded-md text-white p-4" onClick={() => {setEditMode(false); setId(0); setTitle(''); setDescription('');setDescription('');}}>cancelar</button>
-              </div>
+              mutation.isPending ?
+                <p>Carregando...</p>
                 :
-                <button type="submit" className="bg-blue-500 border-none outline-none rounded-md text-white p-4">criar</button>
+                <form className="flex flex-col gap-2" action={editMode ? handleEditTask : handleCreateTask}>
+                  <label htmlFor="title">Título</label>
+                  <input className="text-black rounded-md outline-none p-4" value={title} onChange={(e) => setTitle(e.target.value)} type="text" name="title" id="title" />
+                  <label htmlFor="description">Descrição</label>
+                  <input className="text-black rounded-md outline-none p-4" value={description} onChange={(e) => setDescription(e.target.value)} type="text" name="description" id="description" />
+                  <label htmlFor="categroy">Categoria</label>
+                  <input className="text-black rounded-md outline-none p-4 mb-6" value={category} onChange={(e) => setCategory(e.target.value)} type="text" name="categoryy" id="category" />
+                  <button type="submit" className="bg-blue-500 border-none outline-none rounded-md text-white p-4">Criar Tarefa</button>
+                </form>
             }
-            
-          </form>
-      }
+          </Modal>
+        }
 
+        {
+          modalEditTask &&
+          <Modal onClose={() => setModalEditTask(false)} title="Editar Tarefa">
+            {
+              mutation.isPending ?
+                <p>Carregando...</p>
+                :
+                <form className="flex flex-col gap-2" action={editMode ? handleEditTask : handleCreateTask}>
+                  <label htmlFor="title">Título</label>
+                  <input className="text-black rounded-md outline-none p-4" value={title} onChange={(e) => setTitle(e.target.value)} type="text" name="title" id="title" />
+                  <label htmlFor="description">Descrição</label>
+                  <input className="text-black rounded-md outline-none p-4" value={description} onChange={(e) => setDescription(e.target.value)} type="text" name="description" id="description" />
+                  <label htmlFor="categroy">Categoria</label>
+                  <input className="text-black rounded-md outline-none p-4 mb-6" value={category} onChange={(e) => setCategory(e.target.value)} type="text" name="categoryy" id="category" />
+                  <button type="submit" className="bg-blue-500 border-none outline-none rounded-md text-white p-4">Editar</button>
+                </form>
+            }
+          </Modal>
+        }
 
-    </div>
+        {
+          modalDeleteTask &&
+          <Modal title="Excluir Tarefa" onClose={() => setModalDeleteTask(false)}>
+            <p className="font-[500] text-lg mb-4">Tem certeza que deseja excluir esta tarefa?</p>
+            <button className="w-full bg-red-500 border-none outline-none rounded-md text-white p-4" onClick={() => deleteMutation.mutate(id)}>Excluir</button>
+          </Modal>
+        }
+
+        {
+          modalDetailsTask &&
+          <Modal title="Detalhes" onClose={closeModalDetailsTask}>
+            <p className="font-[300] text-lg mb-4 flex flex-col">Título: <span className="font-[700] text-5xl">{title.charAt(0).toUpperCase() + title.slice(1)}</span></p>
+            <p className="font-[300] text-lg mb-4 flex flex-col">Descrição: <span className="font-[500] text-3xl">{description.charAt(0).toUpperCase() + description.slice(1)}</span></p>
+            <div className="flex gap-4 mt-4">
+              <p className="font-[500] text-base text-white bg-blue-500 py-1 px-2 rounded-md">{category.charAt(0).toUpperCase() + category.slice(1)}</p>
+              <>
+                {
+                  completed ?
+                    <p className="font-[500] text-base text-white bg-green-500 py-1 px-2 rounded-md">Concluido</p>
+                    :
+                    <p className="font-[500] text-base text-white bg-red-500 py-1 px-2 rounded-md">Pendente</p>
+                }
+              </>
+            </div>
+          </Modal>
+        }
+
+      </div>
+    </>
   );
 }
