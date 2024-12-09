@@ -1,4 +1,4 @@
-"use server"
+
 export async function deleteTask(id: number): Promise<void> {
     const response = await fetch(`/api/todo?id=${id}`, {
       method: 'DELETE',
