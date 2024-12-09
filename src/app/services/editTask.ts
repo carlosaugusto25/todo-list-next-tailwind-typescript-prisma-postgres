@@ -1,4 +1,4 @@
-"use server"
+
 export async function updateTask(updates: {id: number, title: string; description: string, category: string}) {
     const response = await fetch(`/api/todo`, {
       method: 'PUT',
