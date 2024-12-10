@@ -21,9 +21,7 @@ export default function Home() {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, isFetching, isSuccess } = useQuery<Task[]>({ queryKey: ['todos'], queryFn: getTasks, initialData: [] });
-
-
+  const { data, isLoading, isFetching } = useQuery<Task[]>({ queryKey: ['todos'], queryFn: getTasks, initialData: [] });
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -133,7 +131,7 @@ export default function Home() {
       <Header setModal={() => setModalNewTask(true)} />
       <div className="p-4 max-w-4xl mx-auto h-[calc(100vh-5rem)]">
         {
-          (isLoading || isFetching || isSuccess) ?
+          (isLoading || isFetching) ?
             <div className="flex items-center justify-center h-[calc(100vh-6rem)]">
               {theme === 'light' ? <Image src="/assets/spinner-blue.svg" alt="spinner" width={100} height={100} /> : <Image src="/assets/spinner-white.svg" alt="spinner" width={100} height={100} />}
             </div>
