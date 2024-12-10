@@ -21,9 +21,9 @@ export default function Home() {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error, isFetching, isSuccess } = useQuery<Task[]>({ queryKey: ['todos'], queryFn: getTasks, initialData: [] });
+  const { data, isLoading, isFetching, isSuccess } = useQuery<Task[]>({ queryKey: ['todos'], queryFn: getTasks, initialData: [] });
 
- 
+
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -133,46 +133,39 @@ export default function Home() {
       <Header setModal={() => setModalNewTask(true)} />
       <div className="p-4 max-w-4xl mx-auto h-[calc(100vh-5rem)]">
         {
-          error !== null ?
-            <>
-              {
-                (isLoading || isFetching || isSuccess) ?
-                  <div className="flex items-center justify-center h-[calc(100vh-6rem)]">
-                    {theme === 'light' ? <Image src="/assets/spinner-blue.svg" alt="spinner" width={100} height={100} /> : <Image src="/assets/spinner-white.svg" alt="spinner" width={100} height={100} />}
-                  </div>
-                  :
-                  <div className="">
-                    {data?.map((todo) => (
-                      <div className={`flex w-full ${todo.completed ? 'bg-gray-100 dark:bg-slate-600' : 'bg-gray-200 dark:bg-slate-500'} rounded-md p-4 mb-4 justify-between max-[768px]:flex-col max-[768px]:gap-4`} key={todo.id}>
-                        <div>
-                          <p className={`text-blue-500 ${todo.completed ? 'line-through text-slate-300 dark:text-slate-500' : ''} dark:text-slate-100 font-[800] text-4xl `}>{todo.title.charAt(0).toUpperCase() + todo.title.slice(1)}</p>
-                          <p className={`${todo.completed ? 'line-through text-slate-500' : ''} text-base font-[500] text-ellipsis text-nowrap overflow-hidden w-[600px] max-[768px]:w-[300px]`}>{todo.description.charAt(0).toUpperCase() + todo.description.slice(1)}</p>
-                          <div className="flex items-center gap-2">
-                            <p className="font-[300] text-xs">{Intl.DateTimeFormat().format(new Date(todo.createdAt)) || todo.createdAt}</p>
-                            <p className="font-[500] text-xs text-white bg-blue-500 p-1 rounded-md">{todo.category.charAt(0).toUpperCase() + todo.category.slice(1)}</p>
-                            <>
-                              {
-                                todo.completed ?
-                                  <p className="font-[500] text-xs text-white bg-green-500 p-1 rounded-md">Concluido</p>
-                                  :
-                                  <p className="font-[500] text-xs text-white bg-red-500 p-1 rounded-md">Pendente</p>
-                              }
-                            </>
-                          </div>
-                        </div>
-                        <div className="flex gap-2 items-center">
-                          <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDetails(todo.title, todo.description, todo.category, todo.completed)} ><FaListUl /></button>
-                          <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDelete(todo.id)}><FaTrashAlt /></button>
-                          {!todo.completed && <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => editTaskFunction(todo.title, todo.description, todo.id, todo.category, todo.completed)}><FiEdit /></button>}
-                          <button className={`${todo.completed ? 'bg-slate-700' : 'bg-green-500'} border-none outline-none rounded-md ${todo.completed ? 'text-slate-400' : 'text-white'} text-2xl p-2`} onClick={() => editMutation.mutate({ title: todo.title, description: todo.description, id: todo.id, category: todo.category, completed: !todo.completed })}><IoMdCheckboxOutline /></button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-              }
-            </>
+          (isLoading || isFetching || isSuccess) ?
+            <div className="flex items-center justify-center h-[calc(100vh-6rem)]">
+              {theme === 'light' ? <Image src="/assets/spinner-blue.svg" alt="spinner" width={100} height={100} /> : <Image src="/assets/spinner-white.svg" alt="spinner" width={100} height={100} />}
+            </div>
             :
-            <p className="font=[600] text-2xl text-slate-900 dark:text-slate-50">Sem Dados. Algo deu errado. Tente novamente.</p>
+            <div className="">
+              {data?.map((todo) => (
+                <div className={`flex w-full ${todo.completed ? 'bg-gray-100 dark:bg-slate-600' : 'bg-gray-200 dark:bg-slate-500'} rounded-md p-4 mb-4 justify-between max-[768px]:flex-col max-[768px]:gap-4`} key={todo.id}>
+                  <div>
+                    <p className={`text-blue-500 ${todo.completed ? 'line-through text-slate-300 dark:text-slate-500' : ''} dark:text-slate-100 font-[800] text-4xl `}>{todo.title.charAt(0).toUpperCase() + todo.title.slice(1)}</p>
+                    <p className={`${todo.completed ? 'line-through text-slate-500' : ''} text-base font-[500] text-ellipsis text-nowrap overflow-hidden w-[600px] max-[768px]:w-[300px]`}>{todo.description.charAt(0).toUpperCase() + todo.description.slice(1)}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-[300] text-xs">{Intl.DateTimeFormat().format(new Date(todo.createdAt)) || todo.createdAt}</p>
+                      <p className="font-[500] text-xs text-white bg-blue-500 p-1 rounded-md">{todo.category.charAt(0).toUpperCase() + todo.category.slice(1)}</p>
+                      <>
+                        {
+                          todo.completed ?
+                            <p className="font-[500] text-xs text-white bg-green-500 p-1 rounded-md">Concluido</p>
+                            :
+                            <p className="font-[500] text-xs text-white bg-red-500 p-1 rounded-md">Pendente</p>
+                        }
+                      </>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 items-center">
+                    <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDetails(todo.title, todo.description, todo.category, todo.completed)} ><FaListUl /></button>
+                    <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => openModalDelete(todo.id)}><FaTrashAlt /></button>
+                    {!todo.completed && <button className="bg-blue-500 border-none outline-none rounded-md text-white p-3" onClick={() => editTaskFunction(todo.title, todo.description, todo.id, todo.category, todo.completed)}><FiEdit /></button>}
+                    <button className={`${todo.completed ? 'bg-slate-700' : 'bg-green-500'} border-none outline-none rounded-md ${todo.completed ? 'text-slate-400' : 'text-white'} text-2xl p-2`} onClick={() => editMutation.mutate({ title: todo.title, description: todo.description, id: todo.id, category: todo.category, completed: !todo.completed })}><IoMdCheckboxOutline /></button>
+                  </div>
+                </div>
+              ))}
+            </div>
         }
 
         {
