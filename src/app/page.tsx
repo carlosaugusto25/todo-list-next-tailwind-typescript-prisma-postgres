@@ -127,9 +127,9 @@ export default function Home() {
   }
 
   return (
-    <>
+    <div className='overflow-y-scroll'>
       <Header setModal={() => setModalNewTask(true)} />
-      <div className="p-4 max-w-4xl mx-auto h-[calc(100vh-5rem)]">
+      <div className="p-4  max-w-4xl mx-auto h-[calc(100vh-5rem)]">
         {
           (isLoading || isFetching) ?
             <div className="flex items-center justify-center h-[calc(100vh-6rem)]">
@@ -165,7 +165,7 @@ export default function Home() {
               ))}
             </div>
         }
-
+        <div className="bg-transparent w-full h-1" />
         {
           modalNewTask &&
           <Modal onClose={() => { setModalNewTask(false); setTitle(''); setDescription(''); setCategory('') }} title="Nova Tarefa">
@@ -238,6 +238,6 @@ export default function Home() {
         }
 
       </div>
-    </>
+    </div>
   );
 }
