@@ -25,3 +25,12 @@
 </ul>
 
 <h3>Link do deploy na vercel: https://todolistfullstackwithprisma.vercel.app</h3>
+
+<img src="https://i.ibb.co/L0D7V8c/todo05.png" alt="todo05" border="0">
+<img src="https://i.ibb.co/pQWQPMx/todo08.png" alt="todo08" border="0">
+<img src="https://i.ibb.co/dMhjSWT/todo06.png" alt="todo06" border="0">
+<img src="https://i.ibb.co/17LvsG0/todo07.png" alt="todo07" border="0">
+<img src="https://i.ibb.co/qY9jSR3/todo01.png" alt="todo01" border="0">
+<img src="https://i.ibb.co/yPYqjY2/todo04.png" alt="todo04" border="0">
+<img src="https://i.ibb.co/NYN2wSF/todo02.png" alt="todo02" border="0">
+<img src="https://i.ibb.co/rFw72zT/todo03.png" alt="todo03" border="0">
