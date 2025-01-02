@@ -36,7 +36,8 @@ export async function PUT(request: Request) {
             title: data.title,
             description: data.description,
             completed: data.completed,
-            category: data.category
+            category: data.category,
+            position: data.position
         }
     })
     return NextResponse.json({message: "Edited success", updateTodo});
