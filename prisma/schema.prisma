@@ -19,6 +19,7 @@ model Task {
   title       String
   description String
   category    String
+  position    Int @default(autoincrement())
   completed   Boolean  @default(false)
   createdAt   DateTime @default(now())
 }
