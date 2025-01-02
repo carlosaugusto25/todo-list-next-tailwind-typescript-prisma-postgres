@@ -22,6 +22,7 @@
   <li>Projeto desenvolvido em TypeScript</li>
   <li>Modo de tema Claro e Escuro</li>
   <li>Responsividade para dispositivos móveis</li>
+  <li>Arrastar as tarefas para ordem de sua preferência</li>
 </ul>
 
 <h3>Link do deploy na vercel: https://todolistfullstackwithprisma.vercel.app</h3>
